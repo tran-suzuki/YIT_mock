@@ -1,3 +1,4 @@
+
 import React, { useEffect } from 'react';
 import Navbar from './components/Navbar';
 import QRScanner from './components/QRScanner';
@@ -5,6 +6,8 @@ import DezuraTable from './components/DezuraTable';
 import DashboardStats from './components/DashboardStats';
 import SearchFilter from './components/SearchFilter';
 import AnalysisView from './components/AnalysisView';
+import CompanySummary from './components/CompanySummary';
+import SiteSummary from './components/SiteSummary';
 import ScanResultModal from './components/ScanResultModal';
 import { useAppStore } from './store/useAppStore';
 
@@ -47,6 +50,24 @@ const App: React.FC = () => {
                <DezuraTable />
             </div>
           </div>
+        )}
+
+        {/* COMPANY SUMMARY MODE */}
+        {viewMode === 'COMPANY_SUMMARY' && (
+           <div className="space-y-8">
+              {/* Re-use SearchFilter to control the "Selected Date" and "Site" context for the summary */}
+              <SearchFilter />
+              <CompanySummary />
+           </div>
+        )}
+
+        {/* SITE SUMMARY MODE */}
+        {viewMode === 'SITE_SUMMARY' && (
+           <div className="space-y-8">
+              {/* Re-use SearchFilter to control the "Selected Date" and "Company" context for the summary */}
+              <SearchFilter />
+              <SiteSummary />
+           </div>
         )}
 
         {/* ANALYSIS MODE */}

@@ -1,3 +1,4 @@
+
 export interface Worker {
   id: string;
   name: string;
@@ -36,4 +37,4 @@ export interface DailyStats {
   roles: Record<string, number>;
 }
 
-export type ViewMode = 'SCAN' | 'DASHBOARD' | 'ANALYSIS';
+export type ViewMode = 'SCAN' | 'DASHBOARD' | 'ANALYSIS' | 'COMPANY_SUMMARY' | 'SITE_SUMMARY';
