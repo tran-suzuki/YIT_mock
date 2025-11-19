@@ -65,6 +65,10 @@ interface AppState {
   checkOut: () => void;
   loadMonthlyData: (targetDate: string) => Promise<void>;
   runAiAnalysis: () => Promise<void>;
+  
+  // Manual Edit Actions
+  upsertRecord: (record: Partial<AttendanceRecord> & { workerId: string; date: string }) => void;
+  deleteRecord: (recordId: string) => void;
 }
 
 // --- Store Implementation ---
@@ -185,5 +189,38 @@ export const useAppStore = create<AppState>((set, get) => ({
     
     const result = await analyzeSiteProductivity(relevantRecords, workers);
     set({ aiAnalysis: result, isAnalyzing: false });
+  },
+
+  upsertRecord: (partialRecord) => {
+    const { records, sites } = get();
+    const defaultSite = sites[0]?.id || 'unknown';
+    
+    const existingIndex = records.findIndex(
+      r => (partialRecord.id && r.id === partialRecord.id) || (r.workerId === partialRecord.workerId && r.date === partialRecord.date)
+    );
+
+    if (existingIndex >= 0) {
+      // Update
+      const updatedRecords = [...records];
+      updatedRecords[existingIndex] = { ...updatedRecords[existingIndex], ...partialRecord };
+      set({ records: updatedRecords });
+    } else {
+      // Insert
+      const newRecord: AttendanceRecord = {
+        id: partialRecord.id || `manual-${Date.now()}`,
+        workerId: partialRecord.workerId,
+        siteId: partialRecord.siteId || defaultSite,
+        date: partialRecord.date,
+        checkInTime: partialRecord.checkInTime || '',
+        checkOutTime: partialRecord.checkOutTime,
+        status: partialRecord.status || AttendanceStatus.CHECKED_IN
+      };
+      set({ records: [...records, newRecord] });
+    }
+  },
+
+  deleteRecord: (recordId: string) => {
+    const { records } = get();
+    set({ records: records.filter(r => r.id !== recordId) });
   }
 }));
