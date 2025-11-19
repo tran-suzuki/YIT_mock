@@ -1,9 +1,22 @@
-import React, { useMemo } from 'react';
+import React, { useMemo, useState, useEffect } from 'react';
 import { RefreshCw, Building2, Users, Clock } from 'lucide-react';
 import { useAppStore } from '../store/useAppStore';
 
 const DashboardStats: React.FC = () => {
   const { records, sites, selectedDate, loadMonthlyData, filterSiteId } = useAppStore();
+  
+  // Real-time clock state
+  const [now, setNow] = useState(new Date());
+
+  useEffect(() => {
+    const timer = setInterval(() => {
+      setNow(new Date());
+    }, 1000);
+    return () => clearInterval(timer);
+  }, []);
+
+  const formattedTime = now.toLocaleTimeString('ja-JP', { hour: '2-digit', minute: '2-digit', second: '2-digit' });
+  const formattedDate = now.toLocaleDateString('ja-JP', { year: 'numeric', month: 'long', day: 'numeric', weekday: 'short' });
 
   const filteredRecords = useMemo(() => {
     return records.filter(record => {
@@ -44,6 +57,8 @@ const DashboardStats: React.FC = () => {
     <div className="space-y-6">
       {/* Top Stats Cards */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+        
+        {/* Card 1: Attendees */}
         <div className="bg-white p-6 rounded-2xl shadow-sm border border-slate-100 flex flex-col justify-between hover:shadow-md transition-shadow">
           <h3 className="text-xs font-bold text-slate-400 uppercase tracking-wide mb-4">本日の入場者</h3>
           <div className="flex items-baseline gap-2">
@@ -51,6 +66,8 @@ const DashboardStats: React.FC = () => {
             <span className="text-sm text-slate-500">名</span>
           </div>
         </div>
+        
+        {/* Card 2: Active Sites */}
         <div className="bg-white p-6 rounded-2xl shadow-sm border border-slate-100 flex flex-col justify-between hover:shadow-md transition-shadow">
           <h3 className="text-xs font-bold text-slate-400 uppercase tracking-wide mb-4">稼働現場数</h3>
           <div className="flex items-baseline gap-2">
@@ -58,18 +75,28 @@ const DashboardStats: React.FC = () => {
             <span className="text-sm text-slate-500">箇所</span>
           </div>
         </div>
-        <div 
-          className="bg-gradient-to-br from-blue-600 to-indigo-700 p-6 rounded-2xl shadow-lg text-white flex items-center justify-between cursor-pointer hover:scale-[1.02] transition-transform"
-          onClick={() => loadMonthlyData(selectedDate)}
-        >
-          <div>
-            <h3 className="text-blue-200 text-xs font-bold uppercase tracking-wide mb-1">AI シミュレーション</h3>
-            <div className="text-lg font-bold">データを同期・生成</div>
+
+        {/* Card 3: Time & Sync (Replaces Simulation Button) */}
+        <div className="bg-gradient-to-br from-indigo-600 to-blue-700 p-6 rounded-2xl shadow-lg text-white flex flex-col justify-between relative overflow-hidden">
+          <div className="absolute top-0 right-0 p-4 opacity-10 pointer-events-none">
+            <Clock size={80} />
           </div>
-          <div className="bg-white/20 p-3 rounded-full">
-            <RefreshCw size={24} className="text-white" />
+
+          <div className="z-10">
+            <h3 className="text-indigo-200 text-xs font-bold uppercase tracking-wide mb-1">現在日時</h3>
+            <div className="text-3xl font-bold font-mono tracking-wider leading-none mb-1">{formattedTime}</div>
+            <div className="text-sm text-indigo-100 opacity-90">{formattedDate}</div>
           </div>
+          
+          <button 
+            onClick={() => loadMonthlyData(selectedDate)}
+            className="mt-4 bg-white/20 hover:bg-white/30 active:bg-white/40 flex items-center justify-center gap-2 py-2 rounded-lg transition-all backdrop-blur-sm z-10 group"
+          >
+            <RefreshCw size={16} className="group-active:animate-spin" />
+            <span className="text-sm font-bold">データ同期</span>
+          </button>
         </div>
+
       </div>
 
       {/* Site Summary Table */}
