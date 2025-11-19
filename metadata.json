@@ -1,0 +1,7 @@
+{
+  "name": "GenbaFlow - Construction Attendance",
+  "description": "A modern construction site attendance system. Scan QR codes for check-in/out and visualize workforce data with Gantt-style views and AI analysis.",
+  "requestFramePermissions": [
+    "camera"
+  ]
+}
