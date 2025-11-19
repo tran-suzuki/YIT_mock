@@ -1,0 +1,18 @@
+{
+    "mcpServers": {
+
+      "playwright": {
+        "command": "npx",
+        "args": ["@playwright/mcp@latest"]
+      },
+
+    "security": {
+      "auth": {
+        "selectedType": "oauth-personal"
+      }
+    },
+    "ui": {
+      "theme": "Default"
+    }
+  }
+}
